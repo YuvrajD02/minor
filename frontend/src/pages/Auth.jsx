@@ -39,8 +39,7 @@ export default function Auth() {
     // ---------------------------------------------
     const handleGoogleLogin = async (credentialResponse) => {
         try {
-            const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
-            const res = await fetch(`${API_URL}/api/auth/google`, {
+            const res = await fetch("http://localhost:4000/api/auth/google", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -129,16 +128,18 @@ export default function Auth() {
             <div className="bg-white flex w-full max-w-lg rounded-xl overflow-hidden shadow-sm border">
                 <button
                     onClick={() => setIsLogin(true)}
-                    className={`w-1/2 py-3 font-semibold ${isLogin ? "bg-[#E8F7F9] text-[#167C85]" : "text-gray-600"
-                        }`}
+                    className={`w-1/2 py-3 font-semibold ${
+                        isLogin ? "bg-[#E8F7F9] text-[#167C85]" : "text-gray-600"
+                    }`}
                 >
                     Login
                 </button>
 
                 <button
                     onClick={() => setIsLogin(false)}
-                    className={`w-1/2 py-3 font-semibold ${!isLogin ? "bg-[#E8F7F9] text-[#167C85]" : "text-gray-600"
-                        }`}
+                    className={`w-1/2 py-3 font-semibold ${
+                        !isLogin ? "bg-[#E8F7F9] text-[#167C85]" : "text-gray-600"
+                    }`}
                 >
                     Sign Up
                 </button>

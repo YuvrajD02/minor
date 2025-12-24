@@ -24,37 +24,19 @@ const Diagnose = () => {
   const [results, setResults] = useState(null);
   const [serviceStatus, setServiceStatus] = useState({ backend: "checking", model_service: "checking" });
   const [error, setError] = useState('');
-  const [isRetrying, setIsRetrying] = useState(false);
 
   // Check service health on component mount
   useEffect(() => {
     const checkHealth = async () => {
-      setIsRetrying(true);
       try {
         const health = await checkServiceHealth();
         setServiceStatus(health);
       } catch (error) {
         setServiceStatus({ backend: "error", model_service: "unavailable" });
-      } finally {
-        setIsRetrying(false);
       }
     };
     checkHealth();
   }, []);
-
-  // Manual retry function
-  const handleRetryHealth = async () => {
-    setIsRetrying(true);
-    setServiceStatus({ backend: "checking", model_service: "checking" });
-    try {
-      const health = await checkServiceHealth();
-      setServiceStatus(health);
-    } catch (error) {
-      setServiceStatus({ backend: "error", model_service: "unavailable" });
-    } finally {
-      setIsRetrying(false);
-    }
-  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -168,34 +150,24 @@ const Diagnose = () => {
             </p>
 
             {/* Service Status */}
-            <div className="mt-4 flex justify-center gap-3 items-center">
+            <div className="mt-4 flex justify-center">
               <div className="bg-white rounded-lg px-4 py-2 shadow-sm border flex items-center gap-2">
-                <span className={`w-2 h-2 rounded-full animate-pulse ${serviceStatus.backend === 'healthy' && (serviceStatus.model_service === 'healthy' || serviceStatus.model_service?.status === 'healthy')
-                    ? 'bg-green-500'
-                    : serviceStatus.backend === 'waking_up' || serviceStatus.backend === 'checking' || isRetrying
-                      ? 'bg-yellow-500'
-                      : 'bg-red-500'
+                <span className={`w-2 h-2 rounded-full ${serviceStatus.model_service === 'healthy' || serviceStatus.model_service?.status === 'healthy'
+                  ? 'bg-green-500'
+                  : serviceStatus.model_service === 'checking'
+                    ? 'bg-yellow-500'
+                    : 'bg-red-500'
                   }`}></span>
                 <span className="text-sm text-gray-600">
                   AI Model: {
-                    serviceStatus.backend === 'healthy' && (serviceStatus.model_service === 'healthy' || serviceStatus.model_service?.status === 'healthy')
-                      ? '✓ Ready'
-                      : serviceStatus.backend === 'waking_up' || isRetrying
-                        ? '⏳ Waking up... (30-60s)'
-                        : serviceStatus.backend === 'checking'
-                          ? '🔍 Checking...'
-                          : '✗ Offline'
+                    serviceStatus.model_service === 'healthy' || serviceStatus.model_service?.status === 'healthy'
+                      ? 'Ready'
+                      : serviceStatus.model_service === 'checking'
+                        ? 'Checking...'
+                        : 'Offline'
                   }
                 </span>
               </div>
-              {(serviceStatus.backend === 'error' || serviceStatus.backend === 'waking_up') && !isRetrying && (
-                <button
-                  onClick={handleRetryHealth}
-                  className="px-3 py-1 text-sm bg-[#0C7B93] text-white rounded-lg hover:bg-[#0a6478] transition-colors"
-                >
-                  🔄 Retry
-                </button>
-              )}
             </div>
           </div>
 
